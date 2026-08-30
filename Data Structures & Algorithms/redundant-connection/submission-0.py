@@ -1,0 +1,31 @@
+class DSU:
+
+    def __init__(self, n: int):
+        self.components = n
+        self.parents = list(range(n + 1))
+        self.size = [1] * (n + 1)
+    
+    def find(self, node: int) -> int:
+        if self.parents[node] != node:
+            self.parents[node] = self.find(self.parents[node])
+        return self.parents[node]
+
+    def union(self, u: int, v: int) -> False:
+        pu = self.find(u)
+        pv = self.find(v)
+        if pu == pv:
+            return False
+        self.components -= 1
+        if self.size[pu] < self.size[pv]:
+            pu, pv = pv, pu
+        self.size[pu] += self.size[pv]
+        self.parents[pv] = pu
+        return True
+
+class Solution:
+    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
+        dsu = DSU(len(edges))
+        for u, v in edges:
+            if not dsu.union(u, v):
+                return [u, v]
+        #WCRT amortized: O(V + E * A(V)) | Space: O(V)
